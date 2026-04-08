@@ -2,34 +2,30 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Clone Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/dasarijyothi86/playwrightrepo.git'
+                checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat 'pip install -r requirements.txt'
-                bat 'python -m playwright install'
+                bat 'python -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'python -m pytest tests/ --html=report.html'
+                bat 'python -m pytest --html=report.html'
             }
         }
 
         stage('Publish Report') {
             steps {
-                publishHTML(target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
+                publishHTML([
                     reportDir: '.',
                     reportFiles: 'report.html',
-                    reportName: 'Playwright Test Report'
+                    reportName: 'Test Report'
                 ])
             }
         }
